@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title id="title">Azan</title>
+    <!-- Mobile Redirect -->
+    <script type="text/javascript">
+    if (navigator.userAgent.match(/(iPhone|iPod|BlackBerry|Android.*Mobile|BB10.*Mobile|webOS|Windows CE|IEMobile|Opera Mini|Opera Mobi|HTC|LG-|LGE|SAMSUNG|Samsung|SEC-SGH|Symbian|Nokia|PlayStation|PLAYSTATION|Nintendo DSi)/i) && location.search!="?nord")
+    	location.replace("http://azan.shazvi.com/mobi");
+    </script>
+	<!-- Libraries -->
+	<script src="js/jquery-1.8.2.js" type="text/javascript"></script>
+	<link href="css/bootstrap.css" rel="stylesheet"/>
+	<link href="css/bootstrap-responsive.css" rel="stylesheet"/>
+	<script src="js/bootstrap.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/hijricalendar-kuwaiti.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+	<!-- Miscellaneous -->
+    <script src="js/init.js" type="text/javascript"></script>
+    <script type="text/javascript" src="docs/colombo.jsonp"></script>
+	<link id="favicon" rel="icon" type="image/png" href="img/icon.png"/>
+</head>
+<body draggable="false">
+    <script type="text/x-template" id="titlebar-tpl">
+    <div class="navbar navbar-inverse navbar-fixed-top" style="position:fixed;">
+        <div class="navbar-inner" style="-webkit-app-region:drag; padding:0px;">
+            <div class="brand" style="padding:5px 20px; margin:5px -5px; color: lightcyan;">
+                <span id="titlebar"></span>
+            </div>
+            
+            <div class="pull-right" style="-webkit-app-region:no-drag; margin:-6px 0px;">
+                <a><img src="img/min.png" usemap="minmap"></a>
+                <a><img src="img/max.png" usemap="maxmap" id="maximize" style="margin-left: -4px; margin-right: -4px;"></a>
+                <a><img src="img/x.png" usemap="xmap" style="margin-right: -8px;"></a>
+                <map name="minmap"><area shape="rect" coords="13,5,39,24" onclick="win.minimize();" title="Minimize"></map>
+                <map name="maxmap"><area shape="rect" coords="0,6,27,24" onclick="(screen.availHeight <= win.height)?win.unmaximize():win.maximize();" title="Maximize" id="maxmap"></map>
+                <map name="xmap"><area shape="rect" coords="0,5,46,24" onclick="win.close();" title="Close"></map>
+            </div>
+        </div>
+    </div>
+    </script>
+    <div class="container-fluid navbar">
+		<div class="navbar-inner">
+			<img class="brand" alt="logo" src="img/logo.png" style="padding: 5px 5px; margin:0 0 0 -20px;">
+			<ul class="nav" style="white-space:nowrap;">
+				<li class="active"><a href="#" onclick="indexpage();" id="indexlink"><i class="icon-home"></i><strong> Home</strong></a></li>
+                <li><a href="#" onclick="pdfpage();" id="pdflink"><i class="icon-list-alt"></i><strong> Prayer</strong> Times</a></li>
+				<li><a href="#" onclick="hijripage()" id="hijrilink"><i class="icon-calendar"></i><strong> Hijri</strong> Calendar/Calculator</a></li>
+				<li><a id="optionlink" href="#option" data-toggle="modal"><i class="icon-wrench"></i> Options</a></li>
+			</ul>
+
+            <span class="pull-right" id="loggedcity" style="word-wrap:break-word;"></span>
+		</div>
+	</div>
+
+	<div id="content"></div>
+
+	<script type="text/x-template" id="index-tpl">
+		<div class="row-fluid">
+			<div class="container span3" style="font-family:Imprint MT Shadow;">
+				<h1 id="time" style="white-space:nowrap;"></h1>
+                <h3 id="date"></h3>
+				<h3 id="hijri"></h3>
+			</div>
+	
+			<div class="container span8">
+				<table class="table table-bordered table-hover" id="table">
+					<thead>
+						<th>Date</th>  <th>Subah</th>  <th>Sunrise</th>  <th>Dhuhr</th>  <th>Asr</th>  <th>Maghrib</th>  <th>Isha</th>
+					</thead>
+					<tbody>
+						<tr id="0" class="warning">
+							<td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>
+						</tr>
+						<tr id="1" class="warning">
+							<td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>
+						</tr>
+						<tr id="2" class="success">
+							<td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>
+						</tr>
+						<tr id="3" class="warning">
+							<td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>
+						</tr>
+						<tr id="4" class="warning">
+							<td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>  <td></td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="progress progress-striped">
+					<div class="bar" id="bar" style=""></div>
+				</div>
+				<p id="next" style="font-weight: bold;"></p>
+			</div>
+		</div>
+		
+		<p id="footer">Copyright &#169; 2014 Shazvi Ahmed</p>
+	</script>
+	
+	<script type="text/x-template" id="pdf-tpl">
+		<h3 id="month" style="text-align:center;"></h3>
+
+        <div class="row-fluid">
+            <div class="container span3">
+                <select id="monthoption" onchange="pdftable(this.value*1)">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+
+                <a href="#" id="qiblahpop" class="btn btn-large" data-toggle="popover">Show Qiblah</a>
+            </div>
+
+            <div class="container span8">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <th>Date</th>  <th>Subah</th>  <th>Sunrise</th>  <th>Dhuhr</th>  <th>Asr</th>  <th>Maghrib</th>  <th>Isha</th>
+                    </thead>
+                    <tbody id="table"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <p style="text-align:center;">Copyright &#169; 2014 Shazvi Ahmed</p>
+	</script>
+
+    <script type="text/x-template" id="hijri-tpl">
+        <h3 id="month" style="text-align:center;"></h3>
+
+        <div class="row-fluid">
+            <div class="container span3 offset1">
+                <select id="hijrioption" onchange="hijritable(this.value*1)">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+            <div class="container span5">
+                <table id="hijritable" class="table table-bordered" style="font-weight: bold;">
+                    <thead>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </thead>
+                    <tbody id="table"></tbody>
+                </table>
+
+                <table class="table table-bordered span3"><tbody><tr id="tblegend"><td class="bluecell"></td></tr></tbody></table>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="container span6 offset3" style="text-align:center;">
+                <input type="date" id="inputhijri" onchange="calcHijri();"/>
+                <br>
+                <div style="color:white;" id="hijrioutput"></div>
+            </div>
+        </div>
+        
+        
+        <p style="text-align:center;">Copyright &#169; 2014 Shazvi Ahmed</p>
+    </script>
+
+	<!-- MODALS -->
+    <div id="option" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="windowTitleLabel" aria-hidden="true" style="text-align:center">
+        <div class="modal-header">
+            <a href="#" class="close" data-dismiss="modal">&times;</a>
+            <h3>Options</h3>
+        </div>
+        <div class="modal-body">
+        	<div class="row-fluid">
+        		<div class="span4">Azan Volume:</div>
+        		<div class="span8">
+        			<input type="range" id="volume" min="0" max="100" value="50" onchange="otheraudio.volume=(this.value)/100; fajraudio.volume=(this.value)/100; $('#volbox').val(this.value); localStorage.volume=(this.value)/100;"/>
+            		<input type="number" id="volbox" min="0" max="100" value="50" onchange="otheraudio.volume=(this.value)/100; fajraudio.volume=(this.value)/100; $('#volume').val(this.value); localStorage.volume=(this.value)/100;" style="width:50px;"/><br/>
+        		</div>
+        	</div><br/>
+            <script type="text/x-template" id="locationtpl">
+                <div class="row-fluid">
+                    <div class="span4">Choose Location:</div>
+                    <div class="span8">
+                        <select id="selectloc" onchange="citychange(this.value);">
+                            <option value="colombo">Colombo</option>
+                            <option value="madrid">Madrid(testing fake city)</option>
+                        </select>
+                    </div>
+                </div><br/>
+            </script>
+        	<div class="row-fluid">
+        		<div class="span4">Azan Play/Pause:</div>
+        		<div class="span8">
+        			<div class="btn-group">
+           		 	<button class="btn" onclick="if(otheraudio.readyState==4)otheraudio.currentTime=0; otheraudio.play();" title="Play Azan"><i class="icon-play"></i></button>
+            		<button class="btn" onclick="otheraudio.pause(); fajraudio.pause();" title="Stop Azan"><i class="icon-stop"></i></button>
+            	</div><br/><br/>
+        		</div>
+        	</div>
+        	<div class="row-fluid">
+				<div class="span4">Azan Toggle:</div>
+        		<div class="span8">
+            		<div id="azantoggle" class="btn-group" data-toggle="buttons-radio">
+            		    <button class="btn" onclick="azan_on=false; localStorage.play='false';">Off</button>
+            		    <button class="btn" onclick="azan_on=true; localStorage.play='true';">On</button>
+            		</div><br/><br/>
+        		</div>
+        	</div>
+            <div class="row-fluid">
+                <div class="span4" title="When azan is approaching.">Blink Toggle:</div>
+                <div class="span8">
+                    <div id="blinkbtns" class="btn-group" data-toggle="buttons-radio">
+                        <button class="btn" onclick="blink_on=false; localStorage.blink='false'; clearBlink();">Off</button>
+                        <button class="btn" onclick="blink_on=true; localStorage.blink='true'; if($('.blink').length!=0) startblink();">On</button>
+                    </div>
+                </div>
+            </div><br/>
+        	<div class="row-fluid">
+				<div class="span4">Adjust Hijri Date:</div>
+        		<div class="span8">
+        			<div>
+                        <select onchange="hijrioffset=this.value-2; localStorage.hijri=this.value-2; $('#hijri').html(writeIslamicDate(hijrioffset)); if(!!$('#hijritable')[0]) hijripage();">
+                            <option class="hijriopts" value="0">-2 days</option>
+                            <option class="hijriopts" value="1">-1 day</option>
+                            <option class="hijriopts" value="2">+0 days</option>
+                            <option class="hijriopts" value="3">+1 day</option>
+                            <option class="hijriopts" value="4">+2 days</option>
+                        </select>
+            		</div>
+        		</div>
+        	</div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Done</a>
+        </div>
+    </div>
+    <script type="text/x-template" id="apptpl">
+        <br/>
+        <div class="row-fluid">
+            <div class="span4">Notification Toggle:</div>
+            <div class="span8">
+                <div id="notifbtns" class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn" onclick="notify_on=false; localStorage.notification='false';">Off</button>
+                    <button class="btn" onclick="notify_on=true; localStorage.notification='true';">On</button>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="row-fluid">
+            <div class="span4">Startup Toggle:</div>
+            <div class="span8">
+                <div id="startupbtns" class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn" onclick="startup_on=false; if(fs.existsSync(startup_path)) fs.unlinkSync(startup_path);">Off</button>
+                    <button class="btn" onclick="startup_on=true; fs.createReadStream('node_modules/Azan Startup.lnk').pipe(fs.createWriteStream(startup_path));">On</button>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <div class="row-fluid">
+            <div class="span4" title="Update at 12:00am everyday">Auto-Update</div>
+            <div class="span8">
+                <div id="updatebtns" class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn" onclick="update_on=false; localStorage.update='false';">Off</button>
+                    <button class="btn" onclick="update_on=true; localStorage.update='true';">On</button>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script src="js/azan.js" type="text/javascript"></script>
+</body>
+</html>

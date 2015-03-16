@@ -1,0 +1,14 @@
+#prayerlist .ui-collapsible-heading .ui-icon {
+    display: none;
+}
+
+#next *{
+	margin-top: 3px;
+	margin-bottom: 3px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.redshade{
+	color: rgb(209, 65, 65);
+}
