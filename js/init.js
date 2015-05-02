@@ -160,7 +160,7 @@ if(nwapp) {
 	
 	menu.append(new gui.MenuItem({ label: 'Purge Memory (Reload)', click: function() {
 		localStorage.devReload="true";
-		//win.reloadDev(); // win.reload(3);
+		win.reloadDev(); // win.reload(3);
 	} }));
 
 	menu.append(new gui.MenuItem({ label: 'Exit', click: function() {
