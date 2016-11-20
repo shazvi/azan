@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title id="title">Azan</title>
-    <!-- Mobile Redirect -->
+	<!-- Mobile Redirect -->
     <script type="text/javascript">
     if (navigator.userAgent.match(/(iPhone|iPod|BlackBerry|Android.*Mobile|BB10.*Mobile|webOS|Windows CE|IEMobile|Opera Mini|Opera Mobi|HTC|LG-|LGE|SAMSUNG|Samsung|SEC-SGH|Symbian|Nokia|PlayStation|PLAYSTATION|Nintendo DSi)/i) && location.search!="?nord")
     	location.replace("http://azan.shazvi.com/mobi");
@@ -271,16 +271,6 @@
                 <div id="startupbtns" class="btn-group" data-toggle="buttons-radio">
                     <button class="btn" onclick="startup_on=false; if(fs.existsSync(startup_path)) fs.unlinkSync(startup_path);">Off</button>
                     <button class="btn" onclick="startup_on=true; fs.createReadStream('node_modules/Azan Startup.lnk').pipe(fs.createWriteStream(startup_path));">On</button>
-                </div>
-            </div>
-        </div>
-        <br/>
-        <div class="row-fluid">
-            <div class="span4" title="Update at 12:00am everyday">Auto-Update</div>
-            <div class="span8">
-                <div id="updatebtns" class="btn-group" data-toggle="buttons-radio">
-                    <button class="btn" onclick="update_on=false; localStorage.update='false';">Off</button>
-                    <button class="btn" onclick="update_on=true; localStorage.update='true';">On</button>
                 </div>
             </div>
         </div>

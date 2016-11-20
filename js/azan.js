@@ -38,8 +38,8 @@ if(supports_audio){
 			if(startup_on) $("#startupbtns").children().eq(1).addClass("active"); // app startup toggle
 			else $("#startupbtns").children().eq(0).addClass("active");
 
-			if(update_on) $("#updatebtns").children().eq(1).addClass("active"); // app update toggle
-			else $("#updatebtns").children().eq(0).addClass("active");
+			/*if(update_on) $("#updatebtns").children().eq(1).addClass("active"); // app update toggle
+			else $("#updatebtns").children().eq(0).addClass("active");*/
 		}
 	}
 }else{
@@ -47,7 +47,7 @@ if(supports_audio){
 	$("#optionlink").parent().hide().prev().hide(); // disable desktop azan options
 }
 
-if(location.protocol != "file:") {
+if(!localhtml) {
 	$(".modal-body").prepend( $("#locationtpl").html() );
 	$("#selectloc option").filter(function(){return this.value==city;}).attr("selected", true); // set current city
 	$("#loggedcity").html("<strong>"+ucfirst(city)+"</strong> times");
@@ -179,9 +179,13 @@ function table(navigated) {
 								tray.tooltip= "Azan: " + azantext;
 								$("#titlebar").html("Azan: " + azantext.replace("\n", " "));
 								if(notify_on && Math.round(diff/60)==20) {
-									ifloggedin(function() {
-										notifu(azantext.replace("\n", " "), 'warn', "Reminder");//new Notification("Azan", {body: azantext});
+									var notifName = new Notification("Reminder", { 
+										body: azantext.replace("\n", " "),
+										icon: '/img/icon.png'
 									});
+									setTimeout(function() {
+										notifName.close();
+									}, 5000);
 								}
 							}
 	
@@ -212,9 +216,13 @@ function table(navigated) {
 								tray.tooltip = "Azan: "+ azantext;
 								$("#titlebar").html("Azan: " + azantext);
 								if(notify_on && i!=2) {
-									ifloggedin(function() {
-										notifu(azantext +"\nTime to go and pray.", 'info', "Azan");//new Notification("Azan", {body: azantext});
+									var notifName = new Notification("Azan", { 
+										body: azantext +"\nTime to go and pray.",
+										icon: '/img/icon.png'
 									});
+									setTimeout(function() {
+										notifName.close();
+									}, 5000);
 								}
 								
 							}
@@ -277,113 +285,6 @@ $("body").on('click', function(e) {
 
 
 if(nwapp) {
-	if(home) { // Create directory tree
-		function buildtree() {
-			function dirTree(filename) {
-				var stats = fs.lstatSync(filename);
-				var info = {
-					path: filename,
-					name: path.basename(filename)
-				};
-				var ignore = [
-					".git",
-					".gitattributes",
-					".gitignore",
-					"mobi",
-					"tree.json",
-					"Azan.lnk",
-					"Azan Startup.lnk"
-				];
-	
-				if(!ignore.contains(info.name)){
-					if (stats.isDirectory()) {
-						info.type = "folder";
-						info.children = fs.readdirSync(filename).map(function(child) {
-							return dirTree(filename + '/' + child);
-						});
-					} else {
-						info.type = "file";
-						info.hash = cryptos.createHash('md5').update(fs.readFileSync(filename)).digest('hex');
-					}
-					return info;
-				}
-			}
-			fs.writeFileSync( "tree.json", JSON.stringify( dirTree(".") ) );
-			gui.Shell.openExternal('https://app.mover.io/');
-		}
-
-		/*tray.menu.insert(new gui.MenuItem({ label: 'Push Update', click: function() {
-			buildtree();
-		} }), 0);*/
-
-		tray.menu.insert(new gui.MenuItem({ label: 'Build Installer', click: function() { // todo
-
-		} }), 0);
-
-		tray.menu.insert(new gui.MenuItem({ type: 'separator' }), 1);
-		tray.menu.insert(new gui.MenuItem({ type: 'separator' }), 4);
-
-	} else { // Daily Update Check
-		function updateaway() { // Get directory tree, Sync modified files
-					
-			require('dns').resolve('azan.site44.com', function(err) {
-			  	if (err){ // no connection
-					console.log(err);
-			  	} else { // have connection
-			  		var tree = "";
-			  		http.get("http://azan.site44.com/tree.json", function(response) {
-						console.log("Got response: " + response.statusCode);
-						response.on("data", function(chunk) {
-							tree += chunk.toString();
-						});
-						response.on("end", function() {
-							parsetree(JSON.parse(tree));
-						});
-					});
-			  	}
-			});
-
-			function parsetree(obj) {
-				if(obj != null) {
-					if (obj.type == "folder") {
-						for (var n = 0; n < obj.children.length; n++) {
-							parsetree(obj.children[n]);
-						}
-					} else if (obj.type == "file") {
-						var localhash = fs.existsSync(obj.path)?cryptos.createHash('md5').update(fs.readFileSync(obj.path)).digest('hex'):"";
-						if (localhash != obj.hash){
-							console.log(obj.path+" is different.");
-
-							httpget.get("http://azan.site44.com"+obj.path.substring(1), obj.path, function (error, result) {
-							    if (error) {
-							        console.error(error);
-							    } else {
-							        console.log('File downloaded at: ' + result.file);
-							    }
-							});
-						}
-					}
-				}
-			}
-		}
-
-		function restartapp() {
-			execFile("cmd64.exe", ["/c", "%APPDATA%\\Azan\\nw\\nw.exe", "%APPDATA%\\Azan\\app", "-startup"]);
-			execFile("cmd64.exe", ["/c", "taskkill", "/f", "/pid", process.pid]);
-		}
-		
-		if(update_on) {
-			updateaway();
-		}
-		setTimeout(restartapp, tomm-now);
-
-		tray.menu.insert(new gui.MenuItem({ label: 'Check for Updates', click: function() {
-			updateaway();
-			notifu("Checking for Updates...");//new Notification("Azan", {body: "Checking for Updates..."})
-		} }), 0);
-	}
-	
-
 	// CSS modifications
 	$("body").css("-webkit-user-select","none").prepend($("#titlebar-tpl").html());
 	$("body").css("background","url(img/nwback.jpg) no-repeat center center fixed").css("background-size","cover");

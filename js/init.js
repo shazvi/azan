@@ -1,8 +1,10 @@
 // Initialize app
-var nwapp = false, desktopweb = false, mobileweb = !!$.mobile, blink_on=false, jsonstr, city="colombo", hijrioffset=0;
+var nwapp = false, desktopweb = false, mobileweb = !!$.mobile, localhtml, localhost, blink_on = false, jsonstr, city = "colombo", hijrioffset = 0;
 
-if(typeof nwDispatcher == "object") nwapp=true; // if nw App
-else if(typeof $.fn.popover == "function") desktopweb=true; // if desktopweb
+if(typeof nw == "object") nwapp = true; // if nw App
+else if(typeof $.fn.popover == "function") desktopweb = true; // if desktopweb
+localhtml = location.protocol == "file:"; // if local html file
+localhost = location.hostname == "localhost"; // you get it...
 
 // UpperCase First char
 function ucfirst(word) { return word.charAt(0).toUpperCase()+word.slice(1); }
@@ -98,7 +100,7 @@ window.onerror = function(errorMsg, url, lineNumber) {
 }
 
 // Load JSON
-if(location.protocol != "file:") {
+if(!localhtml) {
 	$.ajaxSetup({ async: false });
 	$.getJSON(mobileweb?"../docs/"+city+".json":"docs/"+city+".json", function (result,status,xhr) {
 		jsonstr = result;
@@ -116,28 +118,24 @@ if(nwapp) {
 	var http = require('http');
 	
 	// Thirdparty Modules
-	var mkdirp = require('mkdirp');
-	var httpget = require('http-get');
+// 	var mkdirp = require('mkdirp');
+// 	var httpget = require('http-get');
 
 	if(!localStorage.notification) localStorage.notification = "true";
 	var notify_on = localStorage.notification=="true";
-	
-	if(!localStorage.update) localStorage.update = "true";
-	var update_on = localStorage.update=="true";
+
+	$('html').on('contextmenu', function(){ return false; });
 	
 	var home = localStorage.home=="true";
 	
 	var startup_path = process.env.APPDATA.replace(/\\/g, '/')+"/Microsoft/Windows/Start Menu/Programs/StartUp/Azan Startup.lnk";
 	var startup_on = fs.existsSync(startup_path);
 	
-	// Load native UI library
-	var gui = require('nw.gui');
-	
 	// Get the current window
-	var win = gui.Window.get();
+	var win = nw.Window.get();
 	
 	setTimeout(function() {
-	  	if(!gui.App.argv.toString().split(",").contains("-startup") && localStorage.devReload!="true" && process.uptime()<15){ // if not on startup
+	  	if(!nw.App.argv.toString().split(",").contains("-startup") && localStorage.devReload!="true"){ // if not on startup
 	  		win.show();
 	  	    win.focus();
 	  	}
@@ -145,25 +143,26 @@ if(nwapp) {
 	}, 1000);
 	
 	// Create a tray icon
-	var tray = new gui.Tray({ icon: 'img/icon.png' });
+	var tray = new nw.Tray({ icon: 'img/icon.png' });
 	tray.tooltip = "Azan";
 	
 	// Give it a menu
-	var menu = new gui.Menu();
+	var menu = new nw.Menu();
 
 	// If admin (ie. ME!)
 	if(home) {
-		menu.append(new gui.MenuItem({ label: 'Dev Tools (Console)', click: function() {
+		menu.append(new nw.MenuItem({ label: 'Dev Tools (Console)', click: function() {
 			win.showDevTools();
 		} }));
 	}
 	
-	menu.append(new gui.MenuItem({ label: 'Purge Memory (Reload)', click: function() {
+	menu.append(new nw.MenuItem({ label: 'Purge Memory (Reload)', click: function() {
 		localStorage.devReload="true";
-		win.reloadDev(); // win.reload(3);
+		//win.reloadDev(); // 
+		win.reload(3);
 	} }));
 
-	menu.append(new gui.MenuItem({ label: 'Exit', click: function() {
+	menu.append(new nw.MenuItem({ label: 'Exit', click: function() {
 		win.close(true);
 	} }));
 	
@@ -179,4 +178,8 @@ if(nwapp) {
 	  	win.show();
 	  	win.focus();
 	});
+} else if(!localhtml && !localhost) {
+	if (location.protocol != "https:") {
+		location.href = "https:" + location.href.substring(location.protocol.length);
+	}
 }

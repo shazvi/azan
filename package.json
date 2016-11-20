@@ -1,16 +1,14 @@
 {
     "name": "Azan",
-    "main": "app://host/index.html",
-    //"node-main": "node.js",
-    "single-instance": true,
+    "main": "index.html",
     "window": {
         "icon": "img/icon.png",
-        "toolbar": false,
-	    "frame": false,
-	    "show": false,
+        "frame": false,
+        "show": false,
         "width": 962,
         "height": 680,
         "min_width": 900,
         "min_height": 440
-    }
+    },
+    "chromium-args" : "--force-fieldtrials=AutomaticTabDiscarding/Disabled"
 }
