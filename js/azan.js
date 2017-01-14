@@ -71,6 +71,7 @@ function printime() {
 
 $(document).ready(function() {
 	table();
+	$(".copyrt-yr").text(new Date().getFullYear());
 });
 $("#content").html($('#index-tpl').html());
 printime();
@@ -336,10 +337,10 @@ if(nwapp) {
 	// Check if user is logged in, execute arg function
 	function ifloggedin(execute, elseexec) {
 		elseexec = elseexec || function() { // else default function
-			console.log("Not logged in.");
+			// console.log("Not logged in.");
 		};
 		execFile("cmd64.exe", ["/c", "query", "user", process.env.USERNAME], function(stdout, error, stderr) {
-			console.log(stdout, stderr);
+			// console.log(stdout, stderr);
 			if(error.toLowerCase().indexOf("active") != -1) {
 				execute();
 			} else {
@@ -360,6 +361,7 @@ function indexpage() {
 		printime();
 		table(true);
 		if(nwapp) $("#footer,#next").css("color", "lightgrey");
+		$(".copyrt-yr").text(new Date().getFullYear());
 	});
 	$("#content").fadeIn(500);
 }
@@ -381,9 +383,8 @@ function pdfpage() {
 			placement: "bottom"
 		});
 	
-		if(nwapp) {
-			$("p").last().css("color", "lightgrey");
-		}
+		if(nwapp) $("p").last().css("color", "lightgrey");
+		$(".copyrt-yr").text(new Date().getFullYear());
 	});
 	$("#content").fadeIn(500);
 }
@@ -442,6 +443,7 @@ function hijripage() {
 		hijritable(now.getMonth());
 		$("#hijrioption option").filter(function(){return this.value==now.getMonth();}).attr("selected", true);
 		if(nwapp) $("p").last().css("color", "lightgrey");
+		$(".copyrt-yr").text(new Date().getFullYear());
 	});
 	$("#content").fadeIn(500);
 }
