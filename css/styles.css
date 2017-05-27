@@ -42,8 +42,8 @@
 }
 
 body{
-	background: url('../img/back.png') repeat-y; 
-    background-size: contain;
+	background: url('../img/nwback.jpg') no-repeat center center fixed; 
+    background-size: cover;
 }
 
 .progress{
@@ -56,6 +56,11 @@ body{
     bottom:0;
     width:100%;
     padding-bottom:30px;
+    color: lightgrey;
+}
+
+#next{
+    color: lightgrey;
 }
 
 .pull-right>a {
@@ -104,5 +109,9 @@ body{
     right: 5px;
     color: brown;
     text-align: right;
+}
+
+.titlebar-btns area {
+    cursor: default;
 }
 

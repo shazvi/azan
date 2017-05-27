@@ -89,7 +89,8 @@ function kuwaiticalendar(adjust, daten){
 
 	return myRes;
 }
-function writeIslamicDate(adjustment) {
+function writeIslamicDate(adjustment, daten) {
+	var today = daten || new Date();
 	var iMonthNames = [
 		"Muharram",
 		"Safar",
@@ -104,7 +105,7 @@ function writeIslamicDate(adjustment) {
 		"Dhul Qa'ada",
 		"Dhul Hijja"
 	];
-	var iDate = kuwaiticalendar(adjustment);
+	var iDate = kuwaiticalendar(adjustment, today);
 	var outputIslamicDate = iDate[5] + " " + iMonthNames[iDate[6]] + " " + iDate[7];
 	return outputIslamicDate;
 }

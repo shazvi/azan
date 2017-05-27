@@ -4,10 +4,7 @@
 Adding new locations manually:- add json file to docs folder, insert option in index.html select dropdown(desktop & mobi).
 
 TODO:
-hijri calculator(past/future)
 generate installer using src files
-fix devreload
-hijri date update at maghrib
 */
 // Handle Azan Options on load
 if(supports_audio){
@@ -89,9 +86,6 @@ function table(navigated) {
 	// Repeat every minute
 	if(!navigated) setTimeout(table, (60000 - now % 60000));
 
-	// Print Hijri Date
-	if(!mobileweb) $("#hijri").html(writeIslamicDate(hijrioffset));
-
 	// Reset classes on each repeat
 	if(mobileweb) $("#2 li, #3 li:eq(0)").removeClass("ui-btn-up-f").addClass("ui-btn-up-e");
 	else $("td").removeClass("redcell");
@@ -169,6 +163,11 @@ function table(navigated) {
 				}
 				else //////////////////////////   DESKTOP   //////////////////////////////////
 				{
+					var hijri_date = new Date();
+					if(i >= 5) { // if after maghrib
+						hijri_date.setDate(hijri_date.getDate()+1);
+					}
+
 					if (praytime > now) { // if prayer time is after now()
 						$("#"+j+" :eq("+i+")").addClass("redcell");
 						diff = (praytime-now)/1000; // Difference in seconds
@@ -205,7 +204,6 @@ function table(navigated) {
 							// If prayer is in 20 minutes
 							if(diff <1200 && blinkID===null){
 								$("#next").addClass("blink");
-								if(!nwapp) $("#next").addClass("redblink");
 								$("#bar").parent().addClass("progress-danger");
 								if(blink_on) startblink();
 							}
@@ -236,7 +234,7 @@ function table(navigated) {
 							}
 							
 							clearBlink();
-							$("#next").removeClass("blink redblink");
+							$("#next").removeClass("blink");
 							$("#bar").parent().removeClass("progress-danger");
 						}
 						if (!notmain){ // Calculate Progress Bar
@@ -273,6 +271,10 @@ function table(navigated) {
 						}
 						done=true;
 					}
+					
+					// Print Hijri Date
+					if(done) $("#hijri").html(writeIslamicDate(hijrioffset, hijri_date));
+
 				} ///////////////////////////   ENDIF   /////////////////////////////////
 			}
 			i++; // next prayer
@@ -288,8 +290,6 @@ $("body").on('click', function(e) {
 if(nwapp) {
 	// CSS modifications
 	$("body").css("-webkit-user-select","none").prepend($("#titlebar-tpl").html());
-	$("body").css("background","url(img/nwback.jpg) no-repeat center center fixed").css("background-size","cover");
-	$("#footer,#next").css("color", "lightgrey");
 	$("#content,#loggedcity").css("cursor", "default");
 	$(".container-fluid.navbar").css("padding-top","41px");
 	window.ondragstart = function() { return false; };
@@ -360,7 +360,6 @@ function indexpage() {
 		blinkID=null;
 		printime();
 		table(true);
-		if(nwapp) $("#footer,#next").css("color", "lightgrey");
 		$(".copyrt-yr").text(new Date().getFullYear());
 	});
 	$("#content").fadeIn(500);
