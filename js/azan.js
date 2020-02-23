@@ -4,6 +4,7 @@
 Adding new locations manually:- add json file to docs folder, insert option in index.html select dropdown(desktop & mobi).
 
 TODO:
+remove progress bar and all its related code (this was always pointless)
 generate installer using src files
 */
 // Handle Azan Options on load

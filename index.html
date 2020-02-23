@@ -65,7 +65,7 @@
 			<div class="container span8">
 				<table class="table table-bordered table-hover" id="table">
 					<thead>
-						<th>Date</th>  <th>Subah</th>  <th>Sunrise</th>  <th>Dhuhr</th>  <th>Asr</th>  <th>Maghrib</th>  <th>Isha</th>
+						<th>Date</th>  <th>Fajr</th>  <th>Sunrise</th>  <th>Dhuhr</th>  <th>Asr</th>  <th>Maghrib</th>  <th>Isha</th>
 					</thead>
 					<tbody>
 						<tr id="0" class="warning">
@@ -238,7 +238,13 @@
 				<div class="span4">Adjust Hijri Date:</div>
         		<div class="span8">
         			<div>
-                        <select onchange="hijrioffset=this.value-2; localStorage.hijri=this.value-2; $('#hijri').html(writeIslamicDate(hijrioffset)); if(!!$('#hijritable')[0]) hijripage();">
+                        <select onchange="
+                        hijrioffset=this.value-2;
+                        localStorage.hijri=this.value-2;
+                        $('#hijri').html(writeIslamicDate(hijrioffset));
+                        if(!!$('#hijritable')[0]) hijripage();
+                        if(!!$('#next')[0]) indexpage();
+                        ">
                             <option class="hijriopts" value="0">-2 days</option>
                             <option class="hijriopts" value="1">-1 day</option>
                             <option class="hijriopts" value="2">+0 days</option>
