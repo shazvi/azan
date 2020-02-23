@@ -179,7 +179,8 @@ if(nwapp) {
 	  	win.focus();
 	});
 } else if(!localhtml && !localhost) {
-	if (location.protocol != "https:") {
-		location.href = "https:" + location.href.substring(location.protocol.length);
-	}
+	// TODO: only enforce https if domain is azan.shazvi.com
+	// if (location.protocol != "https:") {
+	// 	location.href = "https:" + location.href.substring(location.protocol.length);
+	// }
 }
